@@ -1,0 +1,466 @@
+openapi: 3.0.0
+info:
+  title: Open Banking UK Account Access Consents API
+  description: API for Account Information Service Providers (AISPs) to manage account access consents with Account Servicing Payment Service Providers (ASPSPs).
+  version: 4.0.0
+servers:
+  - url: https://api.openbanking.org.uk/open-banking/v4.0/aisp
+    description: Open Banking UK v4.0 AISP API Base URL
+security:
+  - OAuth2ClientCredentials:
+      - accounts
+tags:
+  - name: Account Access Consents
+    description: Operations related to managing account access consents.
+
+paths:
+  /account-access-consents:
+    post:
+      summary: Create Account Access Consent
+      description: Create an account access consent resource.
+      operationId: createAccountAccessConsents
+      tags:
+        - Account Access Consents
+      requestBody:
+        description: Request to create an account access consent.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OBWriteDomesticConsent4' # Placeholder, actual schema name may vary
+            examples:
+              example1:
+                summary: Example Account Access Consent Request
+                value:
+                  Data:
+                    Permissions:
+                      - ReadAccountsBasic
+                      - ReadAccountsDetail
+                      - ReadBalances
+                      - ReadTransactionsBasic
+                      - ReadTransactionsDetail
+                      - ReadBeneficiariesBasic
+                      - ReadBeneficiariesDetail
+                      - ReadDirectDebits
+                      - ReadStandingOrdersBasic
+                      - ReadStandingOrdersDetail
+                      - ReadProducts
+                      - ReadOffers
+                      - ReadStatements
+                      - ReadParty
+                      - ReadPartyPSU
+                    ExpirationDateTime: '2025-12-31T23:59:59Z'
+                    TransactionFromDateTime: '2024-01-01T00:00:00Z'
+                    TransactionToDateTime: '2025-12-31T23:59:59Z'
+                  Risk: {}
+      responses:
+        '201':
+          description: Account Access Consent created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OBReadConsentResponse5' # Placeholder, actual schema name may vary
+              examples:
+                example1:
+                  summary: Example Account Access Consent Response
+                  value:
+                    Data:
+                      ConsentId: 'ACC_1234567890'
+                      CreationDateTime: '2024-06-01T10:00:00Z'
+                      Status: 'AwaitingAuthorisation'
+                      StatusUpdateDateTime: '2024-06-01T10:00:00Z'
+                      Permissions:
+                        - ReadAccountsBasic
+                        - ReadBalances
+                      ExpirationDateTime: '2025-12-31T23:59:59Z'
+                      TransactionFromDateTime: '2024-01-01T00:00:00Z'
+                      TransactionToDateTime: '2025-12-31T23:59:59Z'
+                    Risk: {}
+                    Links:
+                      Self: 'https://api.openbanking.org.uk/open-banking/v4.0/aisp/account-access-consents/ACC_1234567890'
+                    Meta:
+                      TotalPages: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /account-access-consents/{ConsentId}:
+    get:
+      summary: Get Account Access Consent
+      description: Get an account access consent resource by its ID.
+      operationId: getAccountAccessConsentsConsentId
+      tags:
+        - Account Access Consents
+      parameters:
+        - name: ConsentId
+          in: path
+          description: ConsentId
+          required: true
+          schema:
+            type: string
+          examples:
+            example1:
+              value: ACC_1234567890
+        - name: x-fapi-financial-id
+          in: header
+          description: An HTTP header used by the ASPSP to authenticate the AISP.
+          required: true
+          schema:
+            type: string
+          examples:
+            example1:
+              value: '001580000103720AAJ'
+        - name: x-fapi-interaction-id
+          in: header
+          description: An ASPSP-assigned ID for the request.
+          required: false
+          schema:
+            type: string
+          examples:
+            example1:
+              value: 'a2254e4f-2169-4e4c-8f24-2c0211111111'
+      responses:
+        '200':
+          description: Account Access Consent retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OBReadConsentResponse5' # Placeholder, actual schema name may vary
+              examples:
+                example1:
+                  summary: Example Account Access Consent Response
+                  value:
+                    Data:
+                      ConsentId: 'ACC_1234567890'
+                      CreationDateTime: '2024-06-01T10:00:00Z'
+                      Status: 'Authorised'
+                      StatusUpdateDateTime: '2024-06-01T10:00:00Z'
+                      Permissions:
+                        - ReadAccountsBasic
+                        - ReadBalances
+                      ExpirationDateTime: '2025-12-31T23:59:59Z'
+                      TransactionFromDateTime: '2024-01-01T00:00:00Z'
+                      TransactionToDateTime: '2025-12-31T23:59:59Z'
+                    Risk: {}
+                    Links:
+                      Self: 'https://api.openbanking.org.uk/open-banking/v4.0/aisp/account-access-consents/ACC_1234567890'
+                    Meta:
+                      TotalPages: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Delete Account Access Consent
+      description: Delete an account access consent resource by its ID.
+      operationId: deleteAccountAccessConsentsConsentId
+      tags:
+        - Account Access Consents
+      parameters:
+        - name: ConsentId
+          in: path
+          description: ConsentId
+          required: true
+          schema:
+            type: string
+          examples:
+            example1:
+              value: ACC_1234567890
+        - name: x-fapi-financial-id
+          in: header
+          description: An HTTP header used by the ASPSP to authenticate the AISP.
+          required: true
+          schema:
+            type: string
+          examples:
+            example1:
+              value: '001580000103720AAJ'
+        - name: x-fapi-interaction-id
+          in: header
+          description: An ASPSP-assigned ID for the request.
+          required: false
+          schema:
+            type: string
+          examples:
+            example1:
+              value: 'a2254e4f-2169-4e4c-8f24-2c0211111111'
+      responses:
+        '204':
+          description: Account Access Consent deleted successfully.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    OAuth2ClientCredentials:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials Flow
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.openbanking.org.uk/token # Placeholder
+          scopes:
+            accounts: Read and write account information
+  schemas:
+    OBWriteDomesticConsent4: # This is a placeholder. The actual schema name from the spec would be used.
+      type: object
+      required:
+        - Data
+        - Risk
+      properties:
+        Data:
+          type: object
+          required:
+            - Permissions
+          properties:
+            Permissions:
+              type: array
+              items:
+                type: string
+                enum:
+                  - ReadAccountsBasic
+                  - ReadAccountsDetail
+                  - ReadBalances
+                  - ReadBeneficiariesBasic
+                  - ReadBeneficiariesDetail
+                  - ReadDirectDebits
+                  - ReadOffers
+                  - ReadParty
+                  - ReadPartyPSU
+                  - ReadProducts
+                  - ReadStandingOrdersBasic
+                  - ReadStandingOrdersDetail
+                  - ReadStatements
+                  - ReadTransactionsBasic
+                  - ReadTransactionsDetail
+            ExpirationDateTime:
+              type: string
+              format: date-time
+              description: Date and time at which the consent expires.
+            TransactionFromDateTime:
+              type: string
+              format: date-time
+              description: Start date and time for the transaction history.
+            TransactionToDateTime:
+              type: string
+              format: date-time
+              description: End date and time for the transaction history.
+        Risk:
+          type: object
+          description: Risk section for the consent. (Details typically specific to implementation)
+          # Add specific risk properties if known from the documentation
+    OBReadConsentResponse5: # This is a placeholder. The actual schema name from the spec would be used.
+      type: object
+      required:
+        - Data
+        - Risk
+      properties:
+        Data:
+          type: object
+          required:
+            - ConsentId
+            - CreationDateTime
+            - Status
+            - StatusUpdateDateTime
+            - Permissions
+          properties:
+            ConsentId:
+              type: string
+              description: Unique identification as assigned by the ASPSP to uniquely identify the consent.
+            CreationDateTime:
+              type: string
+              format: date-time
+              description: Date and time at which the resource was created.
+            Status:
+              type: string
+              enum:
+                - AwaitingAuthorisation
+                - Authorised
+                - Rejected
+                - Revoked
+                - Expired
+              description: Specifies the status of the account access consent resource.
+            StatusUpdateDateTime:
+              type: string
+              format: date-time
+              description: Date and time at which the resource status was updated.
+            Permissions:
+              type: array
+              items:
+                type: string
+                enum:
+                  - ReadAccountsBasic
+                  - ReadAccountsDetail
+                  - ReadBalances
+                  - ReadBeneficiariesBasic
+                  - ReadBeneficiariesDetail
+                  - ReadDirectDebits
+                  - ReadOffers
+                  - ReadParty
+                  - ReadPartyPSU
+                  - ReadProducts
+                  - ReadStandingOrdersBasic
+                  - ReadStandingOrdersDetail
+                  - ReadStatements
+                  - ReadTransactionsBasic
+                  - ReadTransactionsDetail
+            ExpirationDateTime:
+              type: string
+              format: date-time
+              description: Date and time at which the consent expires.
+            TransactionFromDateTime:
+              type: string
+              format: date-time
+              description: Start date and time for the transaction history.
+            TransactionToDateTime:
+              type: string
+              format: date-time
+              description: End date and time for the transaction history.
+        Risk:
+          type: object
+          description: Risk section for the consent.
+        Links:
+          type: object
+          properties:
+            Self:
+              type: string
+              format: uri
+              description: Link to the resource.
+        Meta:
+          type: object
+          properties:
+            TotalPages:
+              type: integer
+              description: Number of total pages.
+    OBErrorResponse1:
+      type: object
+      required:
+        - Code
+        - Message
+      properties:
+        Code:
+          type: string
+          description: An error code that can be used to identify the error.
+        Message:
+          type: string
+          description: A description of the error.
+        Errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/OBError1'
+    OBError1:
+      type: object
+      required:
+        - ErrorCode
+        - Message
+      properties:
+        ErrorCode:
+          type: string
+          description: A unique error code.
+        Message:
+          type: string
+          description: A description of the error.
+        Path:
+          type: string
+          description: The path to the field that caused the error.
+        Url:
+          type: string
+          format: uri
+          description: A URL to more information about the error.
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OBErrorResponse1'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OBErrorResponse1'
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OBErrorResponse1'
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OBErrorResponse1'
+    MethodNotAllowed:
+      description: Method Not Allowed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OBErrorResponse1'
+    NotAcceptable:
+      description: Not Acceptable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OBErrorResponse1'
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OBErrorResponse1'
+    TooManyRequests:
+      description: Too Many Requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OBErrorResponse1'
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OBErrorResponse1'

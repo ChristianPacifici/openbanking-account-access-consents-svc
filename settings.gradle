@@ -1,0 +1,6 @@
+rootProject.name = "openbanking-account-access-consents-svc"
+include 'account-access-consent-service',
+        'account-access-consent-client-api'
+
+
+

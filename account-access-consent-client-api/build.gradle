@@ -1,0 +1,61 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.openapitools:openapi-generator-gradle-plugin:7.14.0"
+    }
+}
+
+apply plugin: 'org.openapi.generator'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'io.swagger.core.v3:swagger-annotations:2.2.21'
+    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
+}
+
+openApiGenerate {
+    inputSpec = "$projectDir/src/main/resources/swagger/account-access-consent-client-api.yaml"
+    outputDir = "$buildDir/generated/openapi"
+    generatorName = "spring"
+    apiPackage = "tech.pacifici.api"
+    modelPackage = "tech.pacifici.model"
+    invokerPackage = "tech.pacifici.invoker"
+    configOptions = [
+            dateLibrary: "java8",
+            interfaceOnly: "true",
+            useSpringBoot3: "true",
+            openApiNullable: "false",
+            useJakartaEe: "true"
+    ]
+    generateApiTests = false
+    generateModelTests = false
+    generateApiDocumentation = false
+    generateModelDocumentation = false
+}
+
+
+sourceSets {
+    main {
+        java {
+            srcDir("${buildDir}/generated/openapi/src/main/java")
+        }
+    }
+}
+
+tasks.compileJava {
+    dependsOn tasks.openApiGenerate
+}
