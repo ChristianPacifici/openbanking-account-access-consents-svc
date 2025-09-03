@@ -55,6 +55,43 @@ This is an implementation of the Open Banking UK "Account Access Consents" API. 
    ```bash
    mvn spring-boot:run
    ```
+## Endpoint API
+
+Di seguito sono elencati gli endpoint principali implementati per la gestione dei consensi.
+
+| **Metodo** | **Endpoint** | **Descrizione** |
+| `POST` | `/account-access-consents` | Crea un nuovo consenso per l'accesso agli account. |
+| `GET` | `/account-access-consents/{ConsentId}` | Recupera i dettagli di un consenso specifico utilizzando il suo ID. |
+| `DELETE` | `/account-access-consents/{ConsentId}` | Revoca (elimina) un consenso esistente. |
+
+## Flusso di Lavoro del Consenso (Diagramma Semplificato)
+
+Questo diagramma illustra il flusso di business per la creazione e la gestione di un consenso.
+
+```mermaid
+sequenceDiagram
+    participant TPP as TPP Client
+    participant Controller as AccountAccessConsentsController
+    participant Service as AccountAccessConsentService
+    participant DB as PostgreSQL Database
+
+    TPP->>Controller: 1. POST /account-access-consents
+    Controller->>Service: 2. Chiama createConsent()
+    Service->>Service: 2a. Valida la richiesta
+    Service->>DB: 3. Salva il nuovo consenso (`AwaitingAuthorisation`)
+    DB-->>Service: Consenso salvato con `ConsentId`
+    Service-->>Controller: Dettagli del consenso
+    Controller-->>TPP: 4. HTTP 201 Created
+```
+**Dettagli del Flusso:**
+
+1. Il **TPP Client** invia una richiesta `POST` con un body contenente `Permissions` e `ExpirationDateTime`.
+2. Il **Controller** passa la richiesta al **Service**.
+3. Il **Service** esegue la validazione dei dati. Se la validazione fallisce, il Controller restituisce un errore `400 Bad Request`.
+4. Se la richiesta è valida, il **Service** genera un `ConsentId` univoco e salva il nuovo consenso nel **Database** con lo stato iniziale di `AwaitingAuthorisation`.
+5. Il **Controller** restituisce una risposta `201 Created` contenente i dettagli del consenso creato.
+
+
 
 ### Configuration
 
