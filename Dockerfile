@@ -5,7 +5,8 @@ COPY ../gradle gradle
 COPY ../build.gradle .
 
 RUN ./gradlew dependencies
-COPY src src
+COPY account-access-consent-service/src src
+COPY account-access-consent-client-api/build/generated/openapi/src src
 RUN ./gradlew clean build -x test
 
 FROM eclipse-temurin:21-jre-alpine

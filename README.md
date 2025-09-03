@@ -1,71 +1,81 @@
+
 # Account Access Consents API
 
-Questa è un'implementazione dell'API "Account Access Consents" di Open Banking UK. L'applicazione gestisce il ciclo di vita dei consensi per l'accesso alle informazioni degli account, garantendo la conformità alle specifiche di sicurezza e alle logiche di business richieste dal framework Open Banking.
+![Java](https://img.shields.io/badge/Java-21-blue)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.3-green)
+![OpenAPI](https://img.shields.io/badge/OpenAPI-3.0.3-orange)
 
-## Tecnologie Utilizzate
+This is an implementation of the Open Banking UK "Account Access Consents" API. The application manages the lifecycle of consents for accessing account information, ensuring compliance with the security specifications and business logic required by the Open Banking framework.
 
-* **Java 17+**: Linguaggio di programmazione
-* **Spring Boot 3.x**: Framework per la creazione di applicazioni stand-alone e di produzione
-* **Spring Data JPA**: Per la persistenza dei dati e l'interazione con il database
-* **PostgreSQL**: Database relazionale per la memorizzazione dei consensi
-* **Lombok**: Per ridurre il boilerplate code (getter, setter, costruttori, ecc.)
-* **OpenAPI**: Per la definizione e la generazione degli endpoint API
-* **Maven**: Strumento di gestione del progetto e delle dipendenze
+## Technologies Used
 
-## Funzionalità Principali
+- **Java 21**: Programming language
+- **Spring Boot 3.5.3**: Framework for creating stand-alone and production-ready applications
+- **Spring Data JPA**: For data persistence and database interaction
+- **PostgreSQL**: Relational database for storing consents
+- **Lombok**: To reduce boilerplate code (getters, setters, constructors, etc.)
+- **OpenAPI 3.0.3**: For defining and generating API endpoints
+- **Maven**: Project and dependency management tool
 
-* **Ciclo di Vita del Consenso**: L'applicazione gestisce il passaggio di stato di un consenso, da `AwaitingAuthorisation` (iniziale) fino a stati successivi come `Authorised`, `Rejected`, `Revoked` o `Expired`.
-* **Validazione della Richiesta**: Viene eseguita una validazione rigorosa dei dati in ingresso, inclusi:
-    * La presenza obbligatoria di `ExpirationDateTime` e `Permissions`.
-    * La garanzia che `ExpirationDateTime` sia una data futura.
-* **Immutabilità del Consenso**: Una volta creato, un consenso non può essere modificato. Per alterare i dettagli del consenso, è necessaria la creazione di un nuovo consenso.
-* **Supporto alla Revoca**: L'API consente la revoca di un consenso esistente tramite l'endpoint `DELETE`, invalidando immediatamente l'accesso ai dati.
+## Main Features
 
-## Endpoint API
+- **Consent Lifecycle**: The application manages the state transitions of a consent
+- **Security**: Implements the security standards required by Open Banking
+- **RESTful API**: Provides endpoints for creating, updating, and revoking consents
+- **Database Integration**: Uses PostgreSQL for storing consent data
+- **OpenAPI Documentation**: Automatically generates API documentation
+## Getting Started
 
-Di seguito sono elencati gli endpoint principali implementati per la gestione dei consensi.
+### Prerequisites
 
-| **Metodo** | **Endpoint** | **Descrizione** |
-| `POST` | `/account-access-consents` | Crea un nuovo consenso per l'accesso agli account. |
-| `GET` | `/account-access-consents/{ConsentId}` | Recupera i dettagli di un consenso specifico utilizzando il suo ID. |
-| `DELETE` | `/account-access-consents/{ConsentId}` | Revoca (elimina) un consenso esistente. |
+- Java 17 or higher
+- Maven
+- PostgreSQL
 
-## Flusso di Lavoro del Consenso (Diagramma Semplificato)
+### Installation
 
-Questo diagramma illustra il flusso di business per la creazione e la gestione di un consenso.
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   ```
 
-```mermaid
-sequenceDiagram
-    participant TPP as TPP Client
-    participant Controller as AccountAccessConsentsController
-    participant Service as AccountAccessConsentService
-    participant DB as PostgreSQL Database
+2. Navigate to the project directory:
+   ```bash
+   cd account-access-consents-api
+   ```
 
-    TPP->>Controller: 1. POST /account-access-consents
-    Controller->>Service: 2. Chiama createConsent()
-    Service->>Service: 2a. Valida la richiesta
-    Service->>DB: 3. Salva il nuovo consenso (`AwaitingAuthorisation`)
-    DB-->>Service: Consenso salvato con `ConsentId`
-    Service-->>Controller: Dettagli del consenso
-    Controller-->>TPP: 4. HTTP 201 Created
-```
-**Dettagli del Flusso:**
+3. Configure the database in `application.properties` or `application.yml`.
 
-1. Il **TPP Client** invia una richiesta `POST` con un body contenente `Permissions` e `ExpirationDateTime`.
-2. Il **Controller** passa la richiesta al **Service**.
-3. Il **Service** esegue la validazione dei dati. Se la validazione fallisce, il Controller restituisce un errore `400 Bad Request`.
-4. Se la richiesta è valida, il **Service** genera un `ConsentId` univoco e salva il nuovo consenso nel **Database** con lo stato iniziale di `AwaitingAuthorisation`.
-5. Il **Controller** restituisce una risposta `201 Created` contenente i dettagli del consenso creato.
+4. Build the project:
+   ```bash
+   mvn clean install
+   ```
 
-## Setup e Avvio del Progetto
+5. Run the application:
+   ```bash
+   mvn spring-boot:run
+   ```
 
-1. **Prerequisiti**: Assicurati di avere installati Java 17+, Maven e un'istanza di PostgreSQL funzionante.
-2. **Configurazione del Database**:
-    * Crea un database PostgreSQL con il nome `account_consents`.
-    * Aggiorna il file `src/main/resources/application.properties` con le credenziali del tuo database:
-      ```
-      spring.datasource.url=jdbc:postgresql://localhost:5432/account_consents
-      spring.datasource.username=your_username
-      spring.datasource.password=your_password
-      spring.jpa.hibernate.ddl-auto=update
-      ```
+### Configuration
+
+Ensure that the PostgreSQL database is configured correctly in the application properties file.
+
+### Usage
+
+- Access the API documentation at `http://localhost:8080/swagger-ui.html` after starting the application.
+- Use the provided endpoints to manage consents.
+
+## API Endpoints
+
+- **POST /consents**: Create a new consent
+- **GET /consents/{consentId}**: Retrieve a consent by ID
+- **PUT /consents/{consentId}**: Update a consent
+- **DELETE /consents/{consentId}**: Revoke a consent
+
+## Contributing
+
+Contributions are welcome! Please fork the repository and submit a pull request.
+
+## License
+
+This project is licensed under the MIT License.
